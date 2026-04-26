@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+venv/
+.env
+
+# Generated outputs (don't commit generated PPTs/JSONs)
+sample/content.json
+sample/content_test.json
+sample/output.pptx
+sample/output_test.pptx
+sample/qa/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
