@@ -1,108 +1,141 @@
-# stormdays-ppt-plugin
+# 스톰데이즈 PPT 자동 생성 플러그인
 
-Claude Code 플러그인 — Excel 파일을 입력받아 스톰데이즈 디자인 템플릿으로 PowerPoint를 자동 생성합니다.
+엑셀 파일에 내용만 채우면 **스톰데이즈 디자인 그대로** 파워포인트를 자동으로 만들어주는 도구입니다.
+Claude Code(AI)가 내용을 읽고, 어떤 슬라이드 형식이 어울리는지 판단해서 PPT를 완성합니다.
 
-## 특징
+---
 
-- **픽셀 퍼펙트**: 배경, 폰트, 색상, 레이아웃을 템플릿과 완전히 동일하게 유지
-- **멀티 에이전트**: Content Analyst → Layout Planner → PPT Builder 3단계 AI 팀
-- **9가지 슬라이드 타입**: cover, toc, stat, two_col, steps, metrics, chart, table, closing
-- **Excel 입력**: 시트 구조에 맞게 데이터만 채우면 자동 생성
+## 이런 분께 유용합니다
 
-## 설치
+- 매번 PPT 디자인에 시간을 쏟고 싶지 않은 분
+- 스톰데이즈 템플릿을 그대로 쓰면서 내용만 바꾸고 싶은 분
+- 기획서·보고서를 자주 만드는 분
+
+---
+
+## 시작 전 준비물
+
+아래 두 가지가 컴퓨터에 설치되어 있어야 합니다.
+
+| 준비물 | 설치 링크 | 확인 방법 |
+|--------|----------|----------|
+| **Python 3.8 이상** | [python.org/downloads](https://www.python.org/downloads/) | 시작 메뉴에서 `Python` 검색 |
+| **Claude Code** | [claude.ai/code](https://claude.ai/code) | 설치 후 터미널에서 `claude` 입력 |
+
+> **Python 설치 시 주의**: 설치 화면에서 **"Add Python to PATH"** 체크박스를 반드시 선택하세요.
+
+---
+
+## 설치 방법 (딱 한 번만)
+
+### 1단계 — 이 저장소 다운로드
+
+오른쪽 상단 **Code → Download ZIP** 버튼을 눌러 다운로드한 뒤, 원하는 폴더에 압축을 풉니다.
+
+### 2단계 — 설치 스크립트 실행
+
+압축을 푼 폴더에서 **PowerShell**을 열고 아래 명령어를 붙여넣습니다.
 
 ```powershell
-# PowerShell에서 실행
 .\install.ps1
 ```
 
-설치 후 `~/.claude/skills/generate-ppt.md` 가 생성됩니다.
+> PowerShell 여는 방법: 폴더 안 빈 곳에서 `Shift + 마우스 오른쪽 클릭` → "PowerShell 창 열기"
 
-## 사용법
-
-Claude Code에서:
+설치가 완료되면 이런 메시지가 나옵니다:
 
 ```
-/generate-ppt C:\path\to\your\data.xlsx
+✅ 스킬 설치: C:\Users\사용자명\.claude\skills\generate-ppt.md
+✅ Python 패키지 설치 완료
 ```
 
-또는 자연어로:
+---
 
-```
-이 엑셀 파일로 PPT 만들어줘: C:\data\business_plan.xlsx
-```
+## 사용 방법
 
-## Excel 입력 형식
+### 1단계 — 엑셀 파일 작성
 
-### 필수: `config` 시트
+`sample/sample_input.xlsx` 파일을 열어서 내용을 참고해 작성합니다.
 
-| key | value |
-|-----|-------|
-| title | 프레젠테이션 제목 |
+**반드시 있어야 하는 `config` 시트:**
+
+| A열 (항목) | B열 (내용) |
+|-----------|-----------|
+| title | 발표 제목 |
 | subtitle | 부제목 |
 | date | 2025.10.24 |
-| company | 회사명 |
+| company | 회사 이름 |
 | year | 2025 |
 
-### 선택 시트
+**내용 시트 (필요한 것만 추가):**
 
-| 시트명 | 슬라이드 타입 | 설명 |
-|--------|-------------|------|
-| `stat` | 큰 숫자 강조 | 핵심 지표 1개 + 설명 bullet |
-| `two_col` | 두 컬럼 | 좌우 비교 텍스트 |
-| `steps` | 3단계 카드 | 프로세스/전략 순서 |
-| `metrics` | 성과 지표 | KPI 4개 바/진행률 |
-| `chart` | 파이 차트 | 비율/구성 데이터 |
-| `table` | 표 | 일정, 항목 비교 |
-| `closing` | 결론 | 마무리 메시지 |
+| 시트 이름 | 어떤 내용을 넣을 때 | 예시 |
+|----------|-----------------|------|
+| `stat` | 숫자 하나를 크게 강조할 때 | 매출 138억, 고객 수 1,200명 |
+| `two_col` | 두 가지를 나란히 비교할 때 | 현황 vs 목표, 장점 vs 단점 |
+| `steps` | 3단계 순서로 설명할 때 | 분석 → 전략 → 실행 |
+| `metrics` | KPI·지표 여러 개를 보여줄 때 | 달성률 85%, 만족도 4.2/5 |
+| `chart` | 비율·구성을 차트로 보여줄 때 | 시장 점유율, 예산 배분 |
+| `table` | 표로 정리할 때 | 일정표, 항목별 비교 |
+| `closing` | 마무리 메시지 | 결론 및 제안 |
 
-샘플 Excel: `sample/sample_input.xlsx`
+### 2단계 — Claude Code에서 명령 실행
 
-## 파일 구조
-
-```
-stormdays-ppt-plugin/
-├── install.ps1              # 설치 스크립트
-├── skills/
-│   └── generate-ppt.md      # Claude Code 스킬 정의
-├── scripts/
-│   ├── analyze_excel.py     # Excel → content.json
-│   └── build_pptx.py        # slide_plan.json → .pptx
-├── agents/
-│   ├── content-analyst.md   # Content Analyst 역할 정의
-│   ├── layout-planner.md    # Layout Planner 역할 정의
-│   └── ppt-builder.md       # PPT Builder 역할 정의
-├── template/
-│   └── stormdays.pptx       # 스톰데이즈 디자인 템플릿
-└── sample/
-    └── sample_input.xlsx    # 샘플 입력 Excel
-```
-
-## 요구사항
-
-- Python 3.8+
-- python-pptx
-- openpyxl
-- lxml
-- Claude Code CLI
-
-## 에이전트 팀 구조
+Claude Code 터미널에서 아래처럼 입력합니다.
 
 ```
-사용자 요청 (Excel 파일)
-      │
-      ▼
-오케스트레이터 (/generate-ppt 스킬)
-      │
-      ├── Phase 1: Content Analyst
-      │           Excel 파싱 → content.json
-      │
-      ├── Phase 2: Layout Planner
-      │           맥락 분석 → slide_plan.json
-      │
-      ├── Phase 3: PPT Builder
-      │           slide_plan.json → output.pptx
-      │
-      └── Phase 4: QA
-                  PNG 변환 → 시각 검증
+/generate-ppt C:\내파일경로\파일명.xlsx
 ```
+
+또는 그냥 말로 해도 됩니다:
+
+```
+이 엑셀 파일로 PPT 만들어줘: C:\내파일경로\파일명.xlsx
+```
+
+### 3단계 — 완성된 PPT 확인
+
+엑셀 파일과 같은 폴더 안에 `ppt_work_날짜시간/output.pptx` 파일이 생성됩니다.
+
+---
+
+## 작동 방식 (궁금하신 분만)
+
+내부적으로 AI 3명이 팀을 이뤄 작업합니다.
+
+```
+엑셀 파일 입력
+     │
+     ▼
+1. 내용 분석가 — 엑셀을 읽고 내용을 정리
+     │
+     ▼
+2. 슬라이드 설계자 — 어떤 슬라이드 형식이 어울리는지 결정
+     │
+     ▼
+3. PPT 제작자 — 스톰데이즈 템플릿에 내용을 채워 완성
+```
+
+디자인(색상·폰트·레이아웃·로고 위치)은 절대 바꾸지 않고, **내용만** 채워 넣습니다.
+
+---
+
+## 자주 묻는 질문
+
+**Q. 엑셀 시트를 모두 채워야 하나요?**
+A. 아니요. `config` 시트만 필수입니다. 나머지 시트는 필요한 것만 만들면 됩니다.
+
+**Q. 슬라이드 순서는 어떻게 정하나요?**
+A. AI가 내용을 보고 자연스러운 순서를 자동으로 결정합니다. 직접 순서를 지정하려면 `slides` 시트를 추가하면 됩니다.
+
+**Q. 설치 중 오류가 나면 어떻게 하나요?**
+A. Python이 PATH에 등록되어 있는지 확인해주세요. 확인 방법: PowerShell에서 `python --version` 입력 후 버전 숫자가 나오면 정상입니다.
+
+**Q. 생성된 PPT를 수정해도 되나요?**
+A. 물론입니다. 생성된 `.pptx` 파일은 일반 파워포인트 파일이므로 자유롭게 편집할 수 있습니다.
+
+---
+
+## 문의
+
+이슈가 있으면 [GitHub Issues](../../issues) 에 남겨주세요.
